@@ -37,7 +37,6 @@ function StalkersMods.Utility.CreateFileIfNotExists(path, overwrite)
 
 	if overwrite or not file.Exists(path, "DATA") then
 		file.Write(path, "")
-		print(path)
 		return true
 	end
 	return false
@@ -137,14 +136,16 @@ function StalkersMods.Utility.LoadTableFromFile(fileName)
 	return von_deserialize(file_Read(fileName, "DATA"))
 end
 
-----------------------------------------------------
--- StalkersMods.Utility.IsPlayerValidAndFullyAuthed
-----------------------------------------------------
--- Desc:		Is the given player fully authenticated by the server.
--- Arg One:		Player
--- Returns:		Boolean
-function StalkersMods.Utility.IsPlayerValidAndFullyAuthed(ply)
-	return IsValid(ply) and ply:IsPlayer() and ply:IsFullyAuthenticated()
+if SERVER then
+	----------------------------------------------------
+	-- StalkersMods.Utility.IsPlayerValidAndFullyAuthed
+	----------------------------------------------------
+	-- Desc:		Is the given player fully authenticated by the server.
+	-- Arg One:		Player
+	-- Returns:		Boolean
+	function StalkersMods.Utility.IsPlayerValidAndFullyAuthed(ply)
+		return IsValid(ply) and ply:IsPlayer() and ply:IsFullyAuthenticated()
+	end
 end
 
 ---------------------------------------------
@@ -220,4 +221,42 @@ function StalkersMods.Utility.ReadPlayer()
 		return
 	end
 	return ply
+end
+
+----------------------------------------------
+-- StalkersMods.Utility.StringsHaveAnyOverlap
+----------------------------------------------
+-- Desc:		Checks if two strings have any overlap.
+-- Arg One:		String
+-- Arg Two:		String
+-- Returns:		Boolean
+function StalkersMods.Utility.StringsHaveAnyOverlap(a, b)
+	return (string.lower(a) == string.lower(b)) or string.find(string.lower(a), string.lower(b), nil, true)
+end
+
+function StalkersMods.Utility.SecondsToTimeLeft(rawSec)
+	local days = math.floor(rawSec/86400)
+	rawSec = math.floor(rawSec%86400)
+	local hours = math.floor(rawSec/3600)
+	rawSec = math.floor(rawSec%3600)
+	local mins = math.floor(rawSec/60)
+	rawSec = math.floor(rawSec%60)
+
+	local daysText = tostring(days)
+	if #daysText < 2 then
+		daysText = "0"..daysText
+	end
+	local hoursText = tostring(hours)
+	if #hoursText < 2 then
+		hoursText = "0"..hoursText
+	end
+	local minText = tostring(mins)
+	if #minText < 2 then
+		minText = "0"..minText
+	end
+	local secText = tostring(rawSec)
+	if #secText < 2 then
+		secText = "0"..secText
+	end
+	return daysText..":"..hoursText..":"..minText..":"..secText
 end

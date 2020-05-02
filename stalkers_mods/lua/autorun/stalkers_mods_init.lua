@@ -2,6 +2,10 @@ StalkersMods = StalkersMods or {}
 StalkersMods.AddonFolder = "stalkers_mods"	-- Folder containning StalkersMods.
 StalkersMods.DataFolder = "stalkers_mods"	-- Folder to store data files.
 
+if SERVER then
+	resource.AddWorkshop("2076206299")
+end
+
 -- Load von
 AddCSLuaFile(StalkersMods.AddonFolder.."/von.lua")
 include(StalkersMods.AddonFolder.."/von.lua")
