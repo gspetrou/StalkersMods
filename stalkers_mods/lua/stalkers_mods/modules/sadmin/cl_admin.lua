@@ -30,3 +30,27 @@ net.Receive("StalkersMods.Admin.PlayerUserGroupChanged", function()
 		CAMI.SignalUserGroupChanged(ply, net.ReadString(), net.ReadString(), StalkersMods.Admin.CAMI.AdminModName)
 	end
 end)
+
+net.Receive("StalkersMods.Admin.Notify", function()
+	local out = {StalkersMods.Admin.PrefixColor, StalkersMods.Admin.ChatPrefix.. " ", color_white}
+	local numMsg = net.ReadUInt(StalkersMods.Admin.Config.NWNotifArgs)
+	for i = 1, numMsg do
+		table.insert(out, StalkersMods.Admin.Colors[net.ReadUInt(2) + 1])
+		table.insert(out, net.ReadString())
+	end
+	chat.AddText(unpack(out))
+end)
+
+net.Receive("StalkersMods.Admin.AddPrivilege", function()
+	local userGroupName = net.ReadString()
+	local privName = net.ReadString()
+	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
+	userGroup:GivePrivilege(privName)
+end)
+
+net.Receive("StalkersMods.Admin.RemovePrivilege", function()
+	local userGroupName = net.ReadString()
+	local privName = net.ReadString()
+	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
+	userGroup:RevokePrivilege(privName)
+end)

@@ -135,7 +135,7 @@ function StalkersMods.Admin.UserGroups.SyncUserGroups(recipients)
 	net.Start("StalkersMods.Admin.SyncUserGroups")
 		net.WriteUInt(#userGroupArray, StalkersMods.Admin.Config.NWUserGroupBits)
 		for i = 1, #userGroupArray do
-			StalkersMods.Admin.NetWriteUserGroup(userGroupArray[i])
+			StalkersMods.Admin.UserGroups.NetWriteUserGroup(userGroupArray[i])
 		end
 	if recipients == nil then
 		net.Broadcast()
@@ -153,10 +153,44 @@ end
 util.AddNetworkString("StalkersMods.Admin.SyncUserGroup")
 function StalkersMods.Admin.UserGroups.SyncUserGroup(userGroupName, recipients)
 	net.Start("StalkersMods.Admin.SyncUserGroup")
-		StalkersMods.Admin.NetWriteUserGroup(userGroupName)
+		StalkersMods.Admin.UserGroups.NetWriteUserGroup(userGroupName)
 	if recipients == nil then
 		net.Broadcast()
 	else
 		net.Send(recipients)
 	end
+end
+
+-------------------------------------------------------
+-- StalkersMods.Admin.UserGroups.UserGroupAddPrivilege
+-------------------------------------------------------
+-- Desc:		Adds a privilege to the given user group.
+-- Arg One:		String, name of user group.
+-- Arg Two:		String, privilege name.
+util.AddNetworkString("StalkersMods.Admin.AddPrivilege")
+function StalkersMods.Admin.UserGroups.UserGroupAddPrivilege(userGroupName, privName)
+	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
+	userGroup:GivePrivilege(privName)
+
+	net.Start("StalkersMods.Admin.AddPrivilege")
+		net.WriteString(userGroupName)
+		net.WriteString(privName)
+	net.Broadcast()
+end
+
+--------------------------------------------------------
+-- StalkersMods.Admin.UserGroups.UserGroupTakePrivilege
+--------------------------------------------------------
+-- Desc:		Takes a privilege from the given user group.
+-- Arg One:		String, name of user group.
+-- Arg Two:		String, privilege name.
+util.AddNetworkString("StalkersMods.Admin.RemovePrivilege")
+function StalkersMods.Admin.UserGroups.UserGroupTakePrivilege(userGroupName, privName)
+	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
+	userGroup:RevokePrivilege(privName)
+
+	net.Start("StalkersMods.Admin.RemovePrivilege")
+		net.WriteString(userGroupName)
+		net.WriteString(privName)
+	net.Broadcast()
 end

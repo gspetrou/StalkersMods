@@ -9,12 +9,19 @@ StalkersMods.Admin.Command = {
 	PrettyName = "",	-- Name used for displaying in menus
 	Category = nil,
 	Description = "",
-	DefaultAccess = nil,-- If nil then only the server can access it
-
-	__tostring = function(self)
-		return "SAdmin Command ("..(self.Name == "" and "Unset name" or self.Name)..")"
-	end
+	NeedsTargets = true
 }
+
+-- Generate simple getters and setters:
+local preSettersGettersAdded = table.Copy(StalkersMods.Admin.Command)
+for k, v in pairs(preSettersGettersAdded) do
+	StalkersMods.Admin.Command["Get"..k] = function(self)
+		return self[k]
+	end
+	StalkersMods.Admin.Command["Set"..k] = function(self, newVal)
+		self[k] = newVal
+	end
+end
 
 ----------------------------------------
 -- StalkersMods.Admin.Command:OnExecute
@@ -29,15 +36,9 @@ function StalkersMods.Admin.Command:OnExecute(caller, args, targets)
 	StalkersMods.Logging.LogWarning(string.format(text, name, self.ConsoleCommand))
 end
 
--- Generate simple getters and setters:
-local preSettersGettersAdded = table.Copy(StalkersMods.Admin.Command)
-for k, v in pairs(preSettersGettersAdded) do
-	StalkersMods.Admin.Command["Get"..k] = function(self)
-		return self[k]
-	end
-	StalkersMods.Admin.Command["Set"..k] = function(self, newVal)
-		self[k] = newVal
-	end
+-- Returns a formated string representing the command.
+function StalkersMods.Admin.Command:__tostring()
+	return "SAdmin Command ("..(self.Name == "" and "Unset name" or self.Name)..")"
 end
 
 ----------------------------------

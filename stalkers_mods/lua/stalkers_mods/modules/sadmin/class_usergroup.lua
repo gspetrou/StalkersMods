@@ -8,11 +8,7 @@ StalkersMods.Admin.UserGroup = {
 	Name = "",			-- Console/chat name of command
 	PrettyName = "",	-- Name used for displaying in menus
 	Inherits = "",		-- Other user group it inherits
-	Privileges = {},	-- List of privileges (could be a command name or a CAMI.Privilege)
-
-	__tostring = function(self)
-		return "SAdmin UserGroup ("..(self.Name == "" and "Unset group" or self.Name)..")"
-	end
+	Privileges = {}		-- List of privileges (could be a command name or a CAMI.Privilege)
 }
 
 -- Generate simple getters and setters:
@@ -24,6 +20,11 @@ for k, v in pairs(preSettersGettersAdded) do
 	StalkersMods.Admin.UserGroup["Set"..k] = function(self, newVal)
 		self[k] = newVal
 	end
+end
+
+-- Returns a formated string representing the user group.
+function StalkersMods.Admin.UserGroup:__tostring()
+	return "SAdmin UserGroup ("..(self.Name == "" and "Unset group" or self.Name)..")"
 end
 
 ---------------------------------------------
@@ -42,6 +43,11 @@ end
 -- Desc:		Gives the usergroup the given privilege.
 -- Arg One:		String, privilege.
 function StalkersMods.Admin.UserGroup:GivePrivilege(privName)
+	for i, otherPrivs in ipairs(self:GetPrivileges()) do
+		if otherPrivs == privName then
+			return
+		end
+	end
 	table.insert(self.Privileges, privName)
 end
 
@@ -65,7 +71,8 @@ end
 -- Arg One:		StalkersMods.Admin.UserGroup object, data to set on the object at init, can be used as a copy constructor.
 -- Returns:		StalkersMods.Admin.UserGroup object.
 function StalkersMods.Admin.UserGroup:New(grp)
-	grp = grp or {}		
+	grp = grp or {}
+	grp.Privileges = grp.Privileges or {}
 	setmetatable(grp, self)
 	self.__index = self
 	return grp

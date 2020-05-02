@@ -80,7 +80,7 @@ end
 -- Arg One:		Player
 -- Returns:		Boolean
 function StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, privName)
-	return StalkersMods.Utility.IsPlayerValidAndFullyAuthed(ply)
+	return IsValid(ply) and ply:IsPlayer()
 		and StalkersMods.Admin.UserGroups.UserGroupHasPrivilege(ply:GetUserGroup(), privName)
 end
 
@@ -102,13 +102,13 @@ function StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
 	return StalkersMods.Admin.UserGroups.GetUserGroups()[userGroupName]
 end
 
-------------------------------------------------
--- StalkersMods.Admin.UserGroup.UserGroupExists
-------------------------------------------------
+-------------------------------------------------
+-- StalkersMods.Admin.UserGroups.UserGroupExists
+-------------------------------------------------
 -- Desc:		Sees if the given user group exists.
 -- Arg One:		String, id of group to see if it exists.
 -- Returns:		Boolean.
-function StalkersMods.Admin.UserGroup.UserGroupExists(userGroupName)
+function StalkersMods.Admin.UserGroups.UserGroupExists(userGroupName)
 	return istable(StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName))
 end
 
@@ -163,26 +163,4 @@ function StalkersMods.Admin.UserGroups.GetPlayersByUserGroup(groupName)
 		end
 	end
 	return out
-end
-
--------------------------------------------------------
--- StalkersMods.Admin.UserGroups.UserGroupAddPrivilege
--------------------------------------------------------
--- Desc:		Adds a privilege to the given user group.
--- Arg One:		String, name of user group.
--- Arg Two:		String, privilege name.
-function StalkersMods.Admin.UserGroups.UserGroupAddPrivilege(userGroupName, privName)
-	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
-	userGroup:GivePrivilege(privName)
-end
-
---------------------------------------------------------
--- StalkersMods.Admin.UserGroups.UserGroupTakePrivilege
---------------------------------------------------------
--- Desc:		Takes a privilege from the given user group.
--- Arg One:		String, name of user group.
--- Arg Two:		String, privilege name.
-function StalkersMods.Admin.UserGroups.UserGroupTakePrivilege(userGroupName, privName)
-	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
-	userGroup:RevokePrivilege(privName)
 end

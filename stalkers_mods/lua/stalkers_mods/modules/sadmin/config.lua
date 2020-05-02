@@ -7,11 +7,15 @@ StalkersMods.Admin.Config.SettingsFile = "stalkers_mods/admin/settings.dat"
 StalkersMods.Admin.Config.UserGroupsFile = "stalkers_mods/admin/usergroups.dat"
 -- Stores player's ranks
 StalkersMods.Admin.Config.OfflinePlayerRanksFile = "stalkers_mods/admin/playerranks.dat"
+-- Stores player's bans
+StalkersMods.Admin.Config.PlayerBansFile = "stalkers_mods/admin/bans.dat"
 
 -- 2 to the power of this many bits = number of groups supported by the admin mod.
 StalkersMods.Admin.Config.NWUserGroupBits = 6
 -- 2 to the power of this many bits = number of privileges supported by the admin mod.
 StalkersMods.Admin.Config.NWPrivilegeBits = 10
+-- 2 to the power of this many bits = number of notification args we can send.
+StalkersMods.Admin.Config.NWNotifArgs = 5
 
 StalkersMods.Admin.Config.DefaultSettings = {
 	-- Make sure this fucking exists please.
@@ -31,20 +35,21 @@ StalkersMods.Admin.Config.DefaultUserGroups = {
 		userGroup:SetName("stalker")
 		userGroup:SetPrettyName("Stalker")
 		userGroup:SetInherits("superadmin")
+		userGroup:GivePrivilege("giveprivilege")
 		return userGroup
 	end,
 	["superadmin"] = function()
 		local userGroup = StalkersMods.Admin.UserGroup:New()
 		userGroup:SetName("superadmin")
-		userGroup:SetPrettyName("Stalker")
-		userGroup:SetInherits("Super-Administrator")
+		userGroup:SetPrettyName("Super-Administrator")
+		userGroup:SetInherits("admin")
 		return userGroup
 	end,
 	["admin"] = function()
 		local userGroup = StalkersMods.Admin.UserGroup:New()
 		userGroup:SetName("admin")
-		userGroup:SetPrettyName("Stalker")
-		userGroup:SetInherits("Administrator")
+		userGroup:SetPrettyName("Administrator")
+		userGroup:SetInherits("user")
 		return userGroup
 	end,
 	["user"] = function()
