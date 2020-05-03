@@ -77,32 +77,86 @@ function StalkersMods.Admin.Notify(target, notifData)
 			end
 			
 			net.Start("StalkersMods.Admin.Notify")
-				net.WriteUInt(#notifData, StalkersMods.Admin.Config.NWNotifArgs)
-				for i = 1, #notifData do
-					if isstring(notifData[i]) then
-						net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
-						net.WriteString(notifData[i])
-					else
-						net.WriteUInt(notifData[i][1], 2)
-						net.WriteString(notifData[i][2])
+				if isstring(notifData) then
+					net.WriteUInt(1, StalkersMods.Admin.Config.NWNotifArgs)
+					net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
+					net.WriteString(notifData)
+				else
+					net.WriteUInt(#notifData, StalkersMods.Admin.Config.NWNotifArgs)
+					for i = 1, #notifData do
+						if isstring(notifData[i]) then
+							net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
+							net.WriteString(notifData[i])
+						else
+							net.WriteUInt(notifData[i][1], 2)
+							net.WriteString(notifData[i][2])
+						end
 					end
 				end
 			net.Send(target)
 		end)
 	else
 		local printMsg = {}
-		for i, v in ipairs(notifData) do
-			if isstring(v) then
-				table.insert(printMsg, color_white)
-				table.insert(printMsg, v)
-			else
-				table.insert(printMsg, StalkersMods.Admin.Colors[v[1]])
-				table.insert(printMsg, v[2])
+		if isstring(notifData) then
+			table.insert(printMsg, color_white)
+			table.insert(printMsg, notifData)
+		else
+			for i, v in ipairs(notifData) do
+				if isstring(v) then
+					table.insert(printMsg, color_white)
+					table.insert(printMsg, v)
+				else
+					table.insert(printMsg, StalkersMods.Admin.Colors[v[1]])
+					table.insert(printMsg, v[2])
+				end
 			end
 		end
 		table.insert(printMsg, "\n")
 		MsgC(StalkersMods.Admin.PrefixColor, StalkersMods.Admin.ChatPrefix, " ", unpack(printMsg))
 	end
+end
+
+function StalkersMods.Admin.PrintHelp()
+	local cmdData = {}
+	local cmdText = ""
+	for cmdName, cmdObj in SortedPairs(StalkersMods.Admin.GetAllCommands()) do
+		table.insert(cmdData, Color(255, 140, 140))
+		table.insert(cmdData, "\t"..cmdObj:GetName())
+		table.insert(cmdData, color_white)
+
+		local cmdDesc = ""
+		if cmdObj:GetPrettyName() ~= "" then
+			cmdDesc = cmdDesc.."\n\t\t- "..cmdObj:GetPrettyName()
+		end
+		if cmdObj:GetDescription() ~= "" then
+			cmdDesc = cmdDesc.."\n\t\t- "..cmdObj:GetDescription()
+		end
+
+		if cmdDesc ~= "" then
+			table.insert(cmdData, cmdDesc)
+		end
+
+		table.insert(cmdData, "\n")
+	end
+
+	MsgC(color_white,
+		"\n--------------------------\n",
+		"---", Color(255, 140, 140), "Stalker's Admin Mod", color_white, "----\n",
+		"--------------------------\n",
+		"Run commands like so:\t\tsadmin cmdName <target> <arg(s)>\n",
+		"Run a chat command like so:\t!cmdName <target> <arg(s)>\n",
+		"Target selectors:\n",
+		"\tPlayerName\t- Select a player by their name or partial name\n",
+		"\t*\t\t- Select all players\n",
+		"\t^\t\t- Select yourself\n",
+		"\t!\t\t- Select everyone but yourself\n",
+		"\tt\t\t- Select the player you're looking at (eye trace)\n",
+		"\tSTEAM_X:Y:Z\t- Select the player by their SteamID32\n",
+		"\tSTEAM64\t\t- Select the player by their SteamID64\n",
+		"\th\t\t- Select all humans\n",
+		"\tb\t\t- Select all bots\n",
+		"Commands:\n", unpack(cmdData)
+	)
 end
 
 hook.Add("Initialize", "StalkersMods.Admin.Initialize", function()

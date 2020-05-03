@@ -52,7 +52,6 @@ function StalkersMods.Admin.LoadCommands()
 		if SERVER then
 			StalkersMods.Admin.ValidateAndRunCommand(ply, argStr)
 		else
-			print(argStr)
 			net.Start("StalkersMods.Admin.TryCmd")
 				net.WriteString(argStr)
 			net.SendToServer()
@@ -74,8 +73,8 @@ function StalkersMods.Admin.ValidateAndRunCommand(ply, cmdStr)
 	if not IsValid(ply) or StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, cmdObj:GetName()) then
 		success = cmdObj:OnExecute(ply, args, targets, cmdStr)
 
-		local nameSteamID = IsValid(ply) and "'"..ply:Nick().."' ("..ply:SteamID()..")" or "SERVER"
-		StalkersMods.Logging.LogGeneral("[SAdmin] Player "..nameSteamID.." ran command '"..tostring(cmdObj:GetName()).."'.")
+		local nameSteamID = IsValid(ply) and "Player '"..ply:Nick().."' ("..ply:SteamID()..")" or "SERVER"
+		StalkersMods.Logging.LogGeneral("[SAdmin] "..nameSteamID.." ran command '"..tostring(cmdObj:GetName()).."'.")
 	else
 		StalkersMods.Logging.LogSecurity("[SAdmin] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried running '"..tostring(cmdObj:GetName()).."' which they dont have access to as rank '"..ply:GetUserGroup().."'.")
 		
@@ -128,7 +127,7 @@ function StalkersMods.Admin.GetPlayersByTargetQuery(ply, query, silence)
 	elseif query == "b" then
 		return player.GetBots()
 	-- Humans
-	elseif query == "b" then
+	elseif query == "h" then
 		return player.GetHumans()
 	-- Eye target
 	elseif query == "t" then

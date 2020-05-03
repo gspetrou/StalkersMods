@@ -7,7 +7,7 @@ StalkersMods.Admin = StalkersMods.Admin or {}
 StalkersMods.Admin.Command = {
 	Name = "",			-- Console/chat name of command
 	PrettyName = "",	-- Name used for displaying in menus
-	Category = nil,
+	Category = "",
 	Description = "",
 	NeedsTargets = true
 }

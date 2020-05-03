@@ -201,7 +201,7 @@ end
 hook.Add("PlayerAuthed", "StalkersMods.Admin.SetRankOnAuth", function(ply, steamID)
 	local userGroupName = StalkersMods.Admin.UserGroups.GetOfflinePlayerUserGroupBySteamID(steamID)
 
-	-- If their group got delete or they dont have a group then assign them the default.
+	-- If their group got deleted or they dont have a group then assign them the default.
 	if not userGroupName or not StalkersMods.Admin.UserGroups.UserGroupExists(userGroupName) then
 		StalkersMods.Admin.UserGroups.SetPlayerUserGroupAndSave(ply, StalkersMods.Admin.UserGroups.GetDefaultUserGroup())
 	else
