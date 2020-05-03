@@ -28,6 +28,12 @@ StalkersMods.Admin.Config.DefaultPlayerRanks = {
 	["STEAM_0:1:18093014"] = "stalker"	-- This is the rank called stalker
 }
 
+StalkersMods.Admin.Config.CategoryIcons = {
+	["Utility"] = "icon16/wrench.png",
+	["User Management"] = "icon16/user.png",
+	["Teleportation"] = "icon16/map_edit.png",
+}
+
 -- superadmin, admin, and user need to exist.
 StalkersMods.Admin.Config.DefaultUserGroups = {
 	["stalker"] = function()
@@ -35,7 +41,21 @@ StalkersMods.Admin.Config.DefaultUserGroups = {
 		userGroup:SetName("stalker")
 		userGroup:SetPrettyName("Stalker")
 		userGroup:SetInherits("superadmin")
-		userGroup:GivePrivilege("giveprivilege")
+		userGroup:SetPrivileges({
+			"adduser",
+			"adduserid",
+			"removeuser",
+			"removeuserid",
+			"giveprivilege",
+			"removeprivilege",
+			"addgroup",
+			"removegroup",
+			"ban",
+			"banid",
+			"kick",
+			"map",
+			"help"
+		})
 		return userGroup
 	end,
 	["superadmin"] = function()
@@ -56,6 +76,7 @@ StalkersMods.Admin.Config.DefaultUserGroups = {
 		local userGroup = StalkersMods.Admin.UserGroup:New()
 		userGroup:SetName("user")
 		userGroup:SetPrettyName("User")
+		userGroup:GivePrivilege("help")
 		return userGroup
 	end
 }
