@@ -161,6 +161,17 @@ function StalkersMods.Admin.UserGroups.SyncUserGroup(userGroupName, recipients)
 	end
 end
 
+util.AddNetworkString("StalkersMods.Admin.SyncUserGroupRemoval")
+function StalkersMods.Admin.UserGroups.SyncUserGroupRemoval(userGroupName, recipients)
+	net.Start("StalkersMods.Admin.SyncUserGroupRemoval")
+		net.WriteString(userGroupName)
+	if recipients == nil then
+		net.Broadcast()
+	else
+		net.Send(recipients)
+	end
+end
+
 -------------------------------------------------------
 -- StalkersMods.Admin.UserGroups.UserGroupAddPrivilege
 -------------------------------------------------------

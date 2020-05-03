@@ -260,3 +260,8 @@ function StalkersMods.Utility.SecondsToTimeLeft(rawSec)
 	end
 	return daysText..":"..hoursText..":"..minText..":"..secText
 end
+
+function StalkersMods.Utility.IsSteamID32(inpt)
+	-- STEAM_X:Y:Z
+	return isstring(inpt) and #inpt > 11 and string.sub(inpt, 1, 6) == "STEAM_"
+end

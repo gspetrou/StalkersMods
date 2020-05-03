@@ -54,3 +54,8 @@ net.Receive("StalkersMods.Admin.RemovePrivilege", function()
 	local userGroup = StalkersMods.Admin.UserGroups.GetUserGroup(userGroupName)
 	userGroup:RevokePrivilege(privName)
 end)
+
+net.Receive("StalkersMods.Admin.SyncUserGroupRemoval", function()
+	local removedGroup = net.ReadString()
+	StalkersMods.Admin.UserGroups.RemoveUserGroup(removedGroup)
+end)
