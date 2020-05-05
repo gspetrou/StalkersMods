@@ -17,11 +17,15 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Ban",
 	Category = CATEGORY,
 	Description = "Bans the given user.",
+	ArgDescription = "<ban time in seconds, permanent=0> <ban reason=\"No reason given.\">",
 	NeedsTargets = true
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
 	if not istable(targets) or #targets == 0 then
 		StalkersMods.Admin.Notify(caller, "Invalid target(s) to ban.")
+		return false
+	elseif #targets > 1 then
+		StalkersMods.Admin.Notify(caller, "You can only ban one player at a time!")
 		return false
 	end
 
@@ -81,6 +85,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Bans UserID",
 	Category = CATEGORY,
 	Description = "Bans the given user's SteamID.",
+	ArgDescription = "<steamid32 of player to ban>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -144,6 +149,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Kick",
 	Category = CATEGORY,
 	Description = "Kicks the given user.",
+	ArgDescription = "<kick reason=\"No reason given.\">",
 	NeedsTargets = true
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -186,10 +192,14 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Set Map",
 	Category = CATEGORY,
 	Description = "Changes the server to the given map.",
+	ArgDescription = "<map name, e.g. \"gm_construct\">",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
-	if not istable(args) or #args == 0 or not file.Exists("maps/"..args[1]..".bsp", "GAME") then
+	if not istable(args) or #args == 0 then
+		StalkersMods.Admin.Notify(caller, "Invalid map.")
+		return false
+	elseif not file.Exists("maps/"..args[1]..".bsp", "GAME") then
 		StalkersMods.Admin.Notify(caller, {
 			"Invalid map '",
 			{StalkersMods.Admin.ColEnums.ARGS, args[1]},
@@ -220,7 +230,8 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Help",
 	Category = CATEGORY,
 	Description = "Displays helpful info about the admin mod.",
-	NeedsTargets = false
+	NeedsTargets = false,
+	HasNoArgs = true
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
 	if IsValid(caller) then

@@ -19,6 +19,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Add User",
 	Category = CATEGORY,
 	Description = "Add user to the given group.",
+	ArgDescription = "<user group>",
 	NeedsTargets = true
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -64,6 +65,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Add UserID",
 	Category = CATEGORY,
 	Description = "Add user (by SteamID) to the given group.",
+	ArgDescription = "<steamid32> <usergroup>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -112,8 +114,9 @@ local cmd = StalkersMods.Admin.Command:New{
 	Name = "removeuser",
 	PrettyName = "Remove User",
 	Category = CATEGORY,
-	Description = "Remove user from the given group.",
-	NeedsTargets = true
+	Description = "Remove user from their given group.",
+	NeedsTargets = true,
+	HasNoArgs = true
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
 	if SERVER then
@@ -140,6 +143,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Remove UserID",
 	Category = CATEGORY,
 	Description = "Remove user (by SteamID) from their group.",
+	ArgDescription = "<steamid32>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -179,6 +183,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Give Privilege",
 	Category = CATEGORY,
 	Description = "Gives a usergroup privilege to run a command/privilege.",
+	ArgDescription = "<usergroup> <command/privilege to give>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -222,6 +227,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Remove Privilege",
 	Category = CATEGORY,
 	Description = "Takes a privilege from a given user group.",
+	ArgDescription = "<usergroup> <command/privilege to take>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -265,6 +271,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Add Group",
 	Category = CATEGORY,
 	Description = "Adds a user group.",
+	ArgDescription = "<user group> <user group to inherit from=\"user\">",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
@@ -330,6 +337,7 @@ local cmd = StalkersMods.Admin.Command:New{
 	PrettyName = "Remove Group",
 	Category = CATEGORY,
 	Description = "Removes a user group.",
+	ArgDescription = "<usergroup>",
 	NeedsTargets = false
 }
 function cmd:OnExecute(caller, args, targets, cmdStr)
