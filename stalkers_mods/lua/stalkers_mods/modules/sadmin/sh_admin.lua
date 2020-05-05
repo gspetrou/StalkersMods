@@ -39,6 +39,10 @@ function StalkersMods.Admin.TargetsToText(targets)
 		return targets[1]:Nick()
 	end
 
+	if #targets == player.GetCount() then
+		return "everyone"
+	end
+
 	if #targets == 2 then
 		return targets[1]:Nick().." and "..targets[2]:Nick()
 	end
@@ -61,7 +65,7 @@ end
 -----------------------------
 -- Desc:		Notifies the target with the given args. If target is NULL uses MsgC (server), if not then chat.AddText.
 -- 				This is not networked!
--- Arg One:		Player, or NULL, who to notify. If NULL then prints to server.
+-- Arg One:		Player, table of players, or NULL, who to notify. If NULL then prints to server.
 -- Arg Two:		Table, data for notification. Each array cell can either be a string (white text), or a table in form {textColor, text}.
 if SERVER then util.AddNetworkString("StalkersMods.Admin.Notify") end
 function StalkersMods.Admin.Notify(target, notifData)
@@ -70,31 +74,25 @@ function StalkersMods.Admin.Notify(target, notifData)
 		return
 	end
 
-	if IsValid(target) then
-		timer.Simple(0, function()
-			if not IsValid(target) then
-				return
-			end
-			
-			net.Start("StalkersMods.Admin.Notify")
-				if isstring(notifData) then
-					net.WriteUInt(1, StalkersMods.Admin.Config.NWNotifArgs)
-					net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
-					net.WriteString(notifData)
-				else
-					net.WriteUInt(#notifData, StalkersMods.Admin.Config.NWNotifArgs)
-					for i = 1, #notifData do
-						if isstring(notifData[i]) then
-							net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
-							net.WriteString(notifData[i])
-						else
-							net.WriteUInt(notifData[i][1], 2)
-							net.WriteString(notifData[i][2])
-						end
+	if IsValid(target) or istable(target) then
+		net.Start("StalkersMods.Admin.Notify")
+			if isstring(notifData) then
+				net.WriteUInt(1, StalkersMods.Admin.Config.NWNotifArgs)
+				net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
+				net.WriteString(notifData)
+			else
+				net.WriteUInt(#notifData, StalkersMods.Admin.Config.NWNotifArgs)
+				for i = 1, #notifData do
+					if isstring(notifData[i]) then
+						net.WriteUInt(StalkersMods.Admin.ColEnums.WHITE, 2)
+						net.WriteString(notifData[i])
+					else
+						net.WriteUInt(notifData[i][1], 2)
+						net.WriteString(notifData[i][2])
 					end
 				end
-			net.Send(target)
-		end)
+			end
+		net.Send(target)
 	else
 		local printMsg = {}
 		if isstring(notifData) then

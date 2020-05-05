@@ -31,6 +31,11 @@ function StalkersMods.Admin.Menu.Close()
 	gui.EnableScreenClicker(false)
 end
 
+
+---------------------------
+-- StalkersMods.Admin.Menu
+---------------------------
+-- Desc:		A vgui for the SAdmin admin mod.
 do
 	local PANEL = {}
 
@@ -52,6 +57,7 @@ do
 		draggableHeader:SetDisabled(true)
 		self:AddPanel(draggableHeader)
 
+		-- Add commands.
 		local allCommands = StalkersMods.Admin.GetAllCommands()
 		local categories = {}
 		local selfUserGroup = LocalPlayer():GetUserGroup()
@@ -75,6 +81,8 @@ do
 				parent:SetIcon(StalkersMods.Admin.Config.CategoryIcons[categoryName])
 			end
 
+			function parent:OnMousePressed() end -- Disable clicking a submenu from closing the menu
+
 			self.CommandSubMenus[categoryName] = child
 		end
 
@@ -97,11 +105,14 @@ do
 				if cmdObj:GetDescription() ~= "" then
 					details = details.."\nDescription:   "..cmdObj:GetDescription()
 				end
+				if cmdObj:GetArgDescription() ~= "" then
+					details = details.."\nArguments:   "..cmdObj:GetArgDescription()
+				end
 				details = details.."\nEnter additional arguments or just press <enter>."
 
 				if cmdObj:GetNeedsTargets() then
-					--menuPanel:AddOption(name)
 					local child, parent = menuPanel:AddSubMenu(name)
+					function parent:OnMousePressed() end -- Disable clicking a submenu from closing the menu
 					child:AddOption("Yourself", function() self:RunDermaStringCmdWithPlayerTarget(name, details, cmdObj:GetName(), "^") end)
 					child:AddOption("Everyone but yourself", function()	self:RunDermaStringCmdWithPlayerTarget(name, details, cmdObj:GetName(), "!") end)
 					child:AddOption("Everyone", function() self:RunDermaStringCmdWithPlayerTarget(name, details, cmdObj:GetName(), "*") end)
@@ -121,18 +132,33 @@ do
 							plyName = plyName.." ("..rpname..")"
 						end
 						child:AddOption(plyName, function()
-							self:RunDermaStringCmdWithPlayerTarget(name, details, cmdObj:GetName(), plyName)
+							local plyID = ply:IsBot() and ply:Nick() or ply:SteamID()
+							if cmdObj:GetHasNoArgs() then
+								LocalPlayer():ConCommand(StalkersMods.Admin.CommandPrefix.." "..cmdObj:GetName().." "..plyID)
+							else
+								self:RunDermaStringCmdWithPlayerTarget(name, details, cmdObj:GetName(), plyID)
+							end
 						end)
 					end
 				else
 					menuPanel:AddOption(name, function()
-						Derma_StringRequest("SAdmin - "..name, details, "", function(text)
-							LocalPlayer():ConCommand(StalkersMods.Admin.CommandPrefix.." "..cmdObj:GetName().." "..text)
-						end, nil, "Enter", "Cancel")
+						if cmdObj:GetHasNoArgs() then
+							LocalPlayer():ConCommand(StalkersMods.Admin.CommandPrefix.." "..cmdObj:GetName())
+						else
+							Derma_StringRequest("SAdmin - "..name, details, "", function(text)
+								LocalPlayer():ConCommand(StalkersMods.Admin.CommandPrefix.." "..cmdObj:GetName().." "..text)
+							end, nil, "Enter", "Cancel")
+						end
 					end)
 				end
 			end
 		end
+
+		-- Add external options.
+		if hook.GetTable()["StalkersMods.Admin.AddCustomOptions"] then
+			self:AddSpacer()
+		end
+		hook.Run("StalkersMods.Admin.AddCustomOptions", self)
 	end
 
 	function PANEL:OnRemove()

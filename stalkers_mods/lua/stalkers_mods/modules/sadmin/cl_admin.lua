@@ -38,7 +38,9 @@ net.Receive("StalkersMods.Admin.Notify", function()
 		table.insert(out, StalkersMods.Admin.Colors[net.ReadUInt(2) + 1])
 		table.insert(out, net.ReadString())
 	end
-	chat.AddText(unpack(out))
+	timer.Simple(0, function()
+		chat.AddText(unpack(out))
+	end)
 end)
 
 net.Receive("StalkersMods.Admin.AddPrivilege", function()

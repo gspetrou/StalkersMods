@@ -149,7 +149,6 @@ function StalkersMods.Admin.GetPlayersByTargetQuery(ply, query, silence)
 	if plyBySteamID64 then return {plyBySteamID64} end
 
 	-- Check names (only from start of name)
-	-- Example: User "Stalker", "alker" will fail but "Sta" will find
 	local strongestTargets = {}
 	local strongestTargetLen = 0
 	for i, v in ipairs(player.GetAll()) do
@@ -157,10 +156,11 @@ function StalkersMods.Admin.GetPlayersByTargetQuery(ply, query, silence)
 		local targName = string.lower(v:Nick())
 		local startPos, endPos = string.find(targName, q, 1, true)
 		local addedSelf = false
-		if isnumber(startPos) and isnumber(endPos) and startPos == 1 then
+		if isnumber(startPos) and isnumber(endPos) then
 			if endPos - startPos > strongestTargetLen then
 				strongestTargets = {v}
 				strongestTargetLen = endPos - startPos
+				addedSelf = true
 			elseif endPos - startPos == strongestTargetLen then
 				table.insert(strongestTargets, v)
 				addedSelf = true
@@ -170,7 +170,7 @@ function StalkersMods.Admin.GetPlayersByTargetQuery(ply, query, silence)
 		local rpName = v.getDarkRPVar and v:getDarkRPVar("rpname") or false
 		if rpName then
 			startPos, endPos = string.find(rpName, q, 1, true)
-			if isnumber(startPos) and isnumber(endPos) and startPos == 1 then
+			if isnumber(startPos) and isnumber(endPos) then
 				if endPos - startPos > strongestTargetLen then
 					strongestTargets = {v}
 					strongestTargetLen = endPos - startPos
@@ -224,7 +224,6 @@ function StalkersMods.Admin.GetCommandAndArgsFromString(ply, text)
 	local explodedText = string.Explode(" ", text)
 	local cmdObj = StalkersMods.Admin.GetCommandByName(explodedText[1])
 	if not cmdObj then
-		StalkersMods.Admin.Notify(ply, "Invalid command.")
 		return
 	end
 
@@ -238,7 +237,12 @@ function StalkersMods.Admin.GetCommandAndArgsFromString(ply, text)
 
 	-- Next text is target.
 	local rawTargetQuery = table.remove(explodedText, 1)
-	local targets = StalkersMods.Admin.GetPlayersByTargetQuery(ply, rawTargetQuery)
+	local targets
+	if (not rawTargetQuery or rawTargetQuery == "") and cmdObj:GetNoTargetIsSelf() and IsValid(ply) then
+		targets = {ply}
+	else
+		targets = StalkersMods.Admin.GetPlayersByTargetQuery(ply, rawTargetQuery)
+	end
 	if not istable(targets) or #targets == 0 then
 		return
 	end

@@ -7,9 +7,12 @@ StalkersMods.Admin = StalkersMods.Admin or {}
 StalkersMods.Admin.Command = {
 	Name = "",			-- Console/chat name of command
 	PrettyName = "",	-- Name used for displaying in menus
-	Category = "",
+	Category = "Uncategorized",
 	Description = "",
-	NeedsTargets = true
+	NeedsTargets = true,
+	NoTargetIsSelf = false, -- Only has effect if NeedsTargets is true. If no target is passed then the caller is the target.
+	ArgDescription = "",
+	HasNoArgs = false	-- Used for commands like "help" so we know not to bother prompting for args in the menu.
 }
 
 -- Generate simple getters and setters:

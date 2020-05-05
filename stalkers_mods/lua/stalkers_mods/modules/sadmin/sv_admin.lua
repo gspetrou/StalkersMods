@@ -214,8 +214,19 @@ hook.Add("PlayerSay", "StalkersMods.Admin.CheckChatForCommand", function(ply, te
 		return
 	end
 
-	if text[1] == "!" or text[0] == "/" then
+	if text == "!adminmenu" or text == "/adminmenu" then
+		ply:ConCommand("sadmin_menu")
+		if text == "/adminmenu" then
+			return ""
+		end
+	end
+
+	if text[1] == "!" or text[1] == "/" then
 		local succeeded = StalkersMods.Admin.ValidateAndRunCommand(ply, text)
+
+		if text[1] == "/" and StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, StalkersMods.Admin.Config.SilentCommandOnSlash) then
+			return ""
+		end
 	end
 end)
 

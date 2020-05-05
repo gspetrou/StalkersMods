@@ -84,6 +84,22 @@ function StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, privName)
 		and StalkersMods.Admin.UserGroups.UserGroupHasPrivilege(ply:GetUserGroup(), privName)
 end
 
+---------------------------------------------------------
+-- StalkersMods.Admin.UserGroups.GetPlayersWithPrivilege
+---------------------------------------------------------
+-- Desc:		Returns all players with a given privilege.
+-- Arg One:		String, privilege name.
+-- Returns:		Table of players.
+function StalkersMods.Admin.UserGroups.GetPlayersWithPrivilege(privName)
+	local out = {}
+	for i, ply in ipairs(player.GetAll()) do
+		if StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, privName) then
+			table.insert(out, ply)
+		end
+	end
+	return out
+end
+
 -----------------------------------------------
 -- StalkersMods.Admin.UserGroups.GetUserGroups
 -----------------------------------------------
