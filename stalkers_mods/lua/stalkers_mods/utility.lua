@@ -263,5 +263,15 @@ end
 
 function StalkersMods.Utility.IsSteamID32(inpt)
 	-- STEAM_X:Y:Z
-	return isstring(inpt) and #inpt > 11 and string.sub(inpt, 1, 6) == "STEAM_"
+	if isstring(inpt) and #inpt > 11 and string.sub(inpt, 1, 6) == "STEAM_" then
+		local numColon = 0
+		for i = 1, #inpt do
+			if inpt[i] == ':' then
+				numColon = numColon + 1
+			end
+		end
+
+		return numColon == 2
+	end
+	return false
 end

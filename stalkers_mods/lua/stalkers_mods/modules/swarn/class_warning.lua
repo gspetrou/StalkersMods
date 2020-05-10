@@ -44,7 +44,7 @@ end
 -- Desc:		Returns a unique identifying string for this warning object.
 -- Returns:		String
 function StalkersMods.Warnings.WarningClass:GetUniqueID()
-	return self:OwnerSteamID().."-"..tostring(self:GetTimeStamp())
+	return self:GetOwnerSteamID().."-"..tostring(self:GetTimeStamp())
 end
 
 ------------------------------------------

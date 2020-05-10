@@ -118,7 +118,7 @@ function StalkersMods.Warnings.GiveOfflinePlayerWarning(steamIDGetWarn, plyGiveW
 	StalkersMods.Warnings.GiveWarningToSteamID(steamIDGetWarn, warnObj)
 end
 
-util.AddNetworkString("StalkersMods.Warings.SyncOnlinePlys")
+util.AddNetworkString("StalkersMods.Warnings.SyncOnlinePlys")
 function StalkersMods.Warnings.SyncOnlinePlayerWarnings(recipients)
 	local warnsToSend = {}
 
@@ -131,7 +131,7 @@ function StalkersMods.Warnings.SyncOnlinePlayerWarnings(recipients)
 		end
 	end
 
-	net.Start("StalkersMods.Warings.SyncOnlinePlys")
+	net.Start("StalkersMods.Warnings.SyncOnlinePlys")
 		net.WriteUInt(#warnsToSend, 12)
 		for i, warn in ipairs(warnsToSend) do
 			StalkersMods.Warnings.WriteWarning(warnsToSend[i])
@@ -143,19 +143,131 @@ function StalkersMods.Warnings.SyncOnlinePlayerWarnings(recipients)
 	end
 end
 
+function StalkersMods.Warnings.SyncSelfWarnings(ply)
+	local warnsToSend = StalkersMods.Warnings.GetWarningsOfPlayer(ply) or {}
+	net.Start("StalkersMods.Warnings.SyncOnlinePlys")
+		net.WriteUInt(#warnsToSend, 12)
+		for i, warn in ipairs(warnsToSend) do
+			StalkersMods.Warnings.WriteWarning(warn)
+		end
+	net.Send(ply)
+end
+
 util.AddNetworkString("StalkersMods.Warnings.RequestOnlineWarns")
 net.Receive("StalkersMods.Warnings.RequestOnlineWarns", function(_, ply)
-	StalkersMods.Warnings.SyncOnlinePlayerWarnings(ply)
+	if not IsValid(ply) then
+		return
+	end
+
+	CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.SYNC_ANY.Name, function(allowed)
+		-- If not allowed then try to send their own warning data.
+		if not allowed then
+			CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.SYNC_SELF.Name, function(allowed)
+				if allowed then
+					StalkersMods.Warnings.SyncSelfWarnings(ply)
+				else
+					-- Send them shit
+					net.Start("StalkersMods.Warnings.SyncOnlinePlys")
+						net.WriteUInt(0, 12)
+					net.Send(ply)
+					StalkersMods.Logging.LogWarning("[SWarn] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried viewing warnings when they aren't allowed.")
+				end
+			end)
+		else
+			StalkersMods.Warnings.SyncOnlinePlayerWarnings(ply)
+		end
+	end)
 end)
 
 util.AddNetworkString("StalkersMods.Warnings.RequestAddWarn")
 net.Receive("StalkersMods.Warnings.RequestAddWarn", function(_, ply)
+	if not IsValid(ply) then
+		return
+	end
+
 	local targetSteamID = net.ReadString()
 	local reason = net.ReadString()
 	if not StalkersMods.Utility.IsSteamID32(targetSteamID) then
 		return
 	end
-	StalkersMods.Warnings.GiveOfflinePlayerWarning(targetSteamID, ply:SteamID(), reason)
+
+	CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.ADD.Name, function(allowed)
+		if allowed then
+			StalkersMods.Warnings.GiveOfflinePlayerWarning(targetSteamID, ply:SteamID(), reason)
+		else
+			StalkersMods.Logging.LogSecurity("[SWarn] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried adding a warning to ("..targetSteamID..") when they aren't allowed!")
+		end
+	end)
+end)
+
+util.AddNetworkString("StalkersMods.Warnings.RequestDeleteWarn")
+net.Receive("StalkersMods.Warnings.RequestDeleteWarn", function(_, ply)
+	if not IsValid(ply) then
+		return
+	end
+
+	local warnID = net.ReadString()
+	local warnObj = StalkersMods.Warnings.GetWarningByUniqueID(warnID)
+	if warnObj then
+		CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.DELETE.Name, function(allowed)
+			if allowed then
+				StalkersMods.Warnings.RemoveWarningFromSteamID(warnObj:GetOwnerSteamID(), warnID)
+			else
+				StalkersMods.Logging.LogSecurity("[SWarn] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried deleting warning ("..warnID..") when they aren't allowed!")
+			end
+		end)
+	end
+end)
+
+util.AddNetworkString("StalkersMods.Warnings.RequestBySteamID")
+net.Receive("StalkersMods.Warnings.RequestBySteamID", function(_, ply)
+	if not IsValid(ply) then
+		return
+	end
+	
+	local steamID = net.ReadString()
+
+	local function sendDataOfSteamID(steamID, recip)
+		local warningsOfSteamID = StalkersMods.Warnings.GetWarningsOfSteamID(steamID)
+
+		net.Start("StalkersMods.Warnings.RequestBySteamID")
+			if warningsOfSteamID then
+				net.WriteUInt(#warningsOfSteamID, 12)
+			else
+				net.WriteUInt(0, 12)
+			end
+
+			for i, warn in ipairs(warningsOfSteamID) do
+				StalkersMods.Warnings.WriteWarning(warn)
+			end
+		net.Send(ply)
+	end
+
+	if steamID == ply:SteamID() then
+		CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.SYNC_SELF.Name, function(allowed)
+			if allowed then
+				sendDataOfSteamID(steamID, ply)
+			else
+				-- Send them shit
+				net.Start("StalkersMods.Warnings.RequestBySteamID")
+					net.WriteUInt(0, 12)
+				net.Send(ply)
+				StalkersMods.Logging.LogWarning("[SWarn] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried viewing their own warnings when they aren't allowed.")
+			end
+		end)
+	else
+		CAMI.PlayerHasAccess(ply, StalkersMods.Warnings.Privileges.SYNC_ANY.Name, function(allowed)
+			if allowed then
+				sendDataOfSteamID(steamID, ply)
+			else
+				-- Send them shit
+				net.Start("StalkersMods.Warnings.RequestBySteamID")
+					net.WriteUInt(0, 12)
+				net.Send(ply)
+				StalkersMods.Logging.LogWarning("[SWarn] Player '"..ply:Nick().."' ("..ply:SteamID()..") tried viewing someone else's warnings when they aren't allowed.")
+			end
+		end)
+	end	
 end)
 
 hook.Add("Initialize", "StalkersMods.Warnings.Initialize", function()
