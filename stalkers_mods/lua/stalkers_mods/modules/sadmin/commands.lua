@@ -56,16 +56,52 @@ function StalkersMods.Admin.LoadCommands()
 				net.WriteString(argStr)
 			net.SendToServer()
 		end		
+	end, function(cmd, args)
+		local options = {}
+		for k, cmdObj in SortedPairs(StalkersMods.Admin.GetAllCommands()) do
+			table.insert(options, k)
+		end
+
+		if #args > 0 then
+			local sadminCommand = string.Explode(" ", args)
+
+			-- For some reason first spot is a space.
+			if #sadminCommand <= 1 then
+				return
+			end
+			sadminCommand = sadminCommand[2]
+
+			for i = #options, 1, -1 do
+				local startPos, endPos = string.find(options[i], sadminCommand, 1, true)
+				if startPos ~= 1 then
+					table.remove(options, i)
+				end
+			end
+		end
+
+		for i = 1, #options do
+			options[i] = StalkersMods.Admin.CommandPrefix.." "..options[i]
+		end
+
+		return options
 	end)
 end
 
-function StalkersMods.Admin.ValidateAndRunCommand(ply, cmdStr)
+function StalkersMods.Admin.ValidateAndRunCommand(ply, cmdStr, ranFromChat)
 	if cmdStr[1] == "!" or cmdStr[1] == "/" then
 		cmdStr = string.sub(cmdStr, 1)
 	end
 
 	local cmdObj, targets, args = StalkersMods.Admin.GetCommandAndArgsFromString(ply, cmdStr)
 	if not cmdObj then
+		if not ranFromChat then
+			local cmdNotExist = "[SAdmin] Command does not exist!"
+			if IsValid(ply) then
+				ply:SendLua("print(\""..cmdNotExist.."\")")
+			else
+				print(cmdNotExist)
+			end
+		end
 		return
 	end
 

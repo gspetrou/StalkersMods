@@ -222,7 +222,7 @@ hook.Add("PlayerSay", "StalkersMods.Admin.CheckChatForCommand", function(ply, te
 	end
 
 	if text[1] == "!" or text[1] == "/" then
-		local succeeded = StalkersMods.Admin.ValidateAndRunCommand(ply, text)
+		local succeeded = StalkersMods.Admin.ValidateAndRunCommand(ply, text, true)
 
 		if text[1] == "/" and StalkersMods.Admin.UserGroups.UserHasPrivilege(ply, StalkersMods.Admin.Config.SilentCommandOnSlash) then
 			return ""
