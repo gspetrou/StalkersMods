@@ -87,6 +87,14 @@ function StalkersMods.Admin.LoadCommands()
 	end)
 end
 
+--------------------------------------------
+-- StalkersMods.Admin.ValidateAndRunCommand
+--------------------------------------------
+-- Desc:		Validates the given input is a sadmin command.
+-- Arg One:		Player or NULL, issuing the command (null for server).
+-- Arg Two:		String, the command.
+-- Arg Three:	Boolean, is this being called from chat, if true then dont print "cmd doesnt exist" error.
+-- Returns:		Boolean, was a command successfully ran.
 function StalkersMods.Admin.ValidateAndRunCommand(ply, cmdStr, ranFromChat)
 	if cmdStr[1] == "!" or cmdStr[1] == "/" then
 		cmdStr = string.sub(cmdStr, 1)
@@ -102,7 +110,7 @@ function StalkersMods.Admin.ValidateAndRunCommand(ply, cmdStr, ranFromChat)
 				print(cmdNotExist)
 			end
 		end
-		return
+		return false
 	end
 
 	local success = false

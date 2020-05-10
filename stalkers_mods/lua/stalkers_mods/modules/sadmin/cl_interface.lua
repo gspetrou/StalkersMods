@@ -9,10 +9,19 @@ concommand.Add("sadmin_menu", function()
 	end
 end)
 
+----------------------------------
+-- StalkersMods.Admin.Menu.IsOpen
+----------------------------------
+-- Desc:		Is the admin menu open.
+-- Returns:		Boolean.
 function StalkersMods.Admin.Menu.IsOpen()
 	return IsValid(StalkersMods.Admin.Menu.Panel)
 end
 
+--------------------------------
+-- StalkersMods.Admin.Menu.Open
+--------------------------------
+-- Desc:		Opens the admin menu, it its open it will close and reopen it.
 function StalkersMods.Admin.Menu.Open()
 	if StalkersMods.Admin.Menu.IsOpen() then
 		StalkersMods.Admin.Menu.Close()
@@ -23,6 +32,10 @@ function StalkersMods.Admin.Menu.Open()
 	gui.EnableScreenClicker(true)
 end
 
+--------------------------------
+-- StalkersMods.Admin.Menu.Close
+--------------------------------
+-- Desc:		Closes the admin menu.
 function StalkersMods.Admin.Menu.Close()
 	if StalkersMods.Admin.Menu.IsOpen() then
 		StalkersMods.Admin.Menu.Panel:Remove()

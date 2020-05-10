@@ -234,6 +234,12 @@ function StalkersMods.Utility.StringsHaveAnyOverlap(a, b)
 	return (string.lower(a) == string.lower(b)) or string.find(string.lower(a), string.lower(b), nil, true)
 end
 
+------------------------------------------
+-- StalkersMods.Utility.SecondsToTimeLeft
+------------------------------------------
+-- Desc:		Takes in seconds and converts it to days:hours:minutes:seconds.
+-- Arg One:		Number, of seconds.
+-- Returns:		String, formatted time.
 function StalkersMods.Utility.SecondsToTimeLeft(rawSec)
 	local days = math.floor(rawSec/86400)
 	rawSec = math.floor(rawSec%86400)
@@ -261,17 +267,41 @@ function StalkersMods.Utility.SecondsToTimeLeft(rawSec)
 	return daysText..":"..hoursText..":"..minText..":"..secText
 end
 
+------------------------------------
+-- StalkersMods.Utility.IsSteamID32
+------------------------------------
+-- Desc:		Sees if the input is in the format of a SteamID32.
+-- Arg One:		String
+-- Returns:		Boolean, is it in the format of STEAM_X:Y:Z
 function StalkersMods.Utility.IsSteamID32(inpt)
-	-- STEAM_X:Y:Z
-	if isstring(inpt) and #inpt > 11 and string.sub(inpt, 1, 6) == "STEAM_" then
-		local numColon = 0
-		for i = 1, #inpt do
-			if inpt[i] == ':' then
-				numColon = numColon + 1
+	return inpt:gsub("STEAM_%d:%d:%d+", "") == ""
+end
+
+
+---------------------------------------
+-- StalkersMods.Utility.SetupPanelBlur
+---------------------------------------
+-- Desc:		Setups a panel so that it can be blurred in its paint function by calling pnl:BlurPanel()
+-- 				You must called pnl:BlurPanel() in the paint function of the given panel!
+-- Arg One:		Panel, you wish to blur. Ideally call this in PANEL:Init() and pass self.
+if CLIENT then
+	local ScrW, ScrH = ScrW, ScrH
+	local surface_SetDrawColor, surface_SetMaterial = surface.SetDrawColor, surface.SetMaterial
+	local render_UpdateScreenEffectTexture, surface_DrawTexturedRect = render.UpdateScreenEffectTexture, surface.DrawTexturedRect
+	function StalkersMods.Utility.SetupPanelBlur(pnl)
+		pnl.BlurMaterial = Material("pp/blurscreen")
+
+		function pnl:BlurPanel()
+			local x, y = self:LocalToScreen(0, 0)
+			surface_SetDrawColor(255, 255, 255, 255)
+			surface_SetMaterial(self.BlurMaterial)
+			for i = 1, 12 do
+				self.BlurMaterial:SetFloat("$blur", (i / 4) * 1.5)
+				self.BlurMaterial:Recompute()
+
+				render_UpdateScreenEffectTexture()
+				surface_DrawTexturedRect(-x, -y, ScrW(), ScrH())
 			end
 		end
-
-		return numColon == 2
 	end
-	return false
 end

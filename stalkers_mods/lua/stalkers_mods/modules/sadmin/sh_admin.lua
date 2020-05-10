@@ -114,6 +114,10 @@ function StalkersMods.Admin.Notify(target, notifData)
 	end
 end
 
+--------------------------------
+-- StalkersMods.Admin.PrintHelp
+--------------------------------
+-- Desc:		Prints sadmin help text into the console.
 function StalkersMods.Admin.PrintHelp()
 	local cmdData = {}
 	local cmdText = ""

@@ -1,10 +1,19 @@
 StalkersMods.Warnings = StalkersMods.Warnings or {}
 StalkersMods.Warnings.SaveFileLocation = "stalkers_mods/warnings.dat"
 
+--------------------------------------------
+-- StalkersMods.Warnings.SaveWarningsToFile
+--------------------------------------------
+-- Desc:		Saves current warnings to storage.
 function StalkersMods.Warnings.SaveWarningsToFile()
 	StalkersMods.Utility.SaveTableToFile(StalkersMods.Warnings.Warnings, StalkersMods.Warnings.SaveFileLocation)
 end
 
+---------------------------------------
+-- StalkersMods.Warnings.LoadDataFiles
+---------------------------------------
+-- Desc:		Loads warnings from their storage file. Data goes into StalkersMods.Warnings.Warnings.
+-- Arg One:		Boolean, delete old files and start fresh.
 function StalkersMods.Warnings.LoadDataFiles(forceClean)
 	if forceClean or StalkersMods.Utility.CreateFileIfNotExists(StalkersMods.Warnings.SaveFileLocation) then
 		StalkersMods.Warnings.Warnings = {}
@@ -23,22 +32,51 @@ function StalkersMods.Warnings.LoadDataFiles(forceClean)
 	end
 end
 
+------------------------------------------
+-- StalkersMods.Warnings.GetWarningsTable
+------------------------------------------
+-- Desc:		Gets the warning data table.
+-- Returns:		Table, of warnings.
 function StalkersMods.Warnings.GetWarningsTable()
 	return StalkersMods.Warnings.Warnings or {}
 end
 
+---------------------------------------------
+-- StalkersMods.Warnings.GetWarningsOfPlayer
+---------------------------------------------
+-- Desc:		Gets the warnings of a player.
+-- Arg One:		Player entity
+-- Returns:		Table, or nil if none.
 function StalkersMods.Warnings.GetWarningsOfPlayer(ply)
 	return StalkersMods.Warnings.GetWarningsOfSteamID(ply:SteamID())
 end
 
+----------------------------------------------
+-- StalkersMods.Warnings.GetWarningsOfSteamID
+----------------------------------------------
+-- Desc:		Gets warnings of SteamID.
+-- Arg One:		String, steamid32
+-- Returns:		Table, warnings belonging to that steamid, or nil.
 function StalkersMods.Warnings.GetWarningsOfSteamID(steamID)
 	return StalkersMods.Warnings.GetWarningsTable()[steamID]
 end
 
+---------------------------------------------
+-- StalkersMods.Warnings.GiveWarningToPlayer
+---------------------------------------------
+-- Desc:		Gives a warning to a player.
+-- Arg One:		Player entity.
+-- Arg Two:		StalkersMods.Warnings.WarningClass
 function StalkersMods.Warnings.GiveWarningToPlayer(ply, warningObj)
 	StalkersMods.Warnings.GiveWarningToSteamID(ply:SteamID(), warningObj)
 end
 
+----------------------------------------------
+-- StalkersMods.Warnings.GiveWarningToSteamID
+----------------------------------------------
+-- Desc:		Gives a warning to a SteamID
+-- Arg One:		String, steamid to warn.
+-- Arg Two:		StalkersMods.Warnings.WarningClass
 function StalkersMods.Warnings.GiveWarningToSteamID(steamID, warningObj)
 	if StalkersMods.Warnings.Warnings[steamID] then
 		table.insert(StalkersMods.Warnings.Warnings[steamID], warningObj)
@@ -48,10 +86,22 @@ function StalkersMods.Warnings.GiveWarningToSteamID(steamID, warningObj)
 	StalkersMods.Warnings.SaveWarningsToFile()
 end
 
+-------------------------------------------------
+-- StalkersMods.Warnings.RemoveWarningFromPlayer
+-------------------------------------------------
+-- Desc:		Removes a warning from a player
+-- Arg One:		Player
+-- Arg Two:		String, warning unique ID
 function StalkersMods.Warnings.RemoveWarningFromPlayer(ply, warnID)
 	StalkersMods.Warnings.RemoveWarningFromSteamID(ply:SteamID(), warnID)
 end
 
+--------------------------------------------------
+-- StalkersMods.Warnings.RemoveWarningFromSteamID
+--------------------------------------------------
+-- Desc:		Removes a warning from a steamid.
+-- Arg One:		String, steamid32.
+-- Arg Two:		String, warning unique id.
 function StalkersMods.Warnings.RemoveWarningFromSteamID(steamID, warnID)
 	if StalkersMods.Warnings.Warnings[steamID] then
 		for i, warn in ipairs(StalkersMods.Warnings.Warnings[steamID]) do
@@ -67,6 +117,12 @@ function StalkersMods.Warnings.RemoveWarningFromSteamID(steamID, warnID)
 	end
 end
 
+----------------------------------------------
+-- StalkersMods.Warnings.GetWarningByUniqueID
+----------------------------------------------
+-- Desc:		Gets a warninging objects from its unique id.
+-- Arg One:		String, warning unique id.
+-- Returns:		StalkersMods.Warnings.WarningClass.
 function StalkersMods.Warnings.GetWarningByUniqueID(uniqueID)
 	local objSplitID = string.Split(uniqueID, "-")
 	local plysWarnings = StalkersMods.Warnings.GetWarningsOfSteamID(objSplitID[1])
@@ -81,6 +137,13 @@ function StalkersMods.Warnings.GetWarningByUniqueID(uniqueID)
 	return nil
 end
 
+-------------------------------------------------
+-- StalkersMods.Warnings.GiveOnlinePlayerWarning
+-------------------------------------------------
+-- Desc:		Gives an online player a warning.
+-- Arg One:		Player, to be warned.
+-- Arg Two:		Player or NULL. Player warning the person, null/nil if server.
+-- Arg Three:	String, reason for warn.
 function StalkersMods.Warnings.GiveOnlinePlayerWarning(plyGetWarn, plyGiveWarn, reason)
 	local warnObj = StalkersMods.Warnings.WarningClass:New()
 	warnObj:SetOwnerSteamID(plyGetWarn:SteamID())
@@ -97,6 +160,13 @@ function StalkersMods.Warnings.GiveOnlinePlayerWarning(plyGetWarn, plyGiveWarn, 
 	StalkersMods.Warnings.GiveWarningToPlayer(plyGetWarn, warnObj)
 end
 
+--------------------------------------------------
+-- StalkersMods.Warnings.GiveOfflinePlayerWarning
+--------------------------------------------------
+-- Desc:		Warns a given steamid.
+-- Arg One:		String, steamid to warn.
+-- Arg Two:		Player, giving the warning, or null/nill for server.
+-- Arg Three:	String, reason.
 function StalkersMods.Warnings.GiveOfflinePlayerWarning(steamIDGetWarn, plyGiveWarn, reason)
 	local warnObj = StalkersMods.Warnings.WarningClass:New()
 	warnObj:SetOwnerSteamID(steamIDGetWarn)
@@ -118,6 +188,11 @@ function StalkersMods.Warnings.GiveOfflinePlayerWarning(steamIDGetWarn, plyGiveW
 	StalkersMods.Warnings.GiveWarningToSteamID(steamIDGetWarn, warnObj)
 end
 
+--------------------------------------------------
+-- StalkersMods.Warnings.SyncOnlinePlayerWarnings
+--------------------------------------------------
+-- Desc:		Sends the warnings of all online players to the given recipients.
+-- Arg One:		Player/Table/true. Player/table of player recipients, or true for everyone.
 util.AddNetworkString("StalkersMods.Warnings.SyncOnlinePlys")
 function StalkersMods.Warnings.SyncOnlinePlayerWarnings(recipients)
 	local warnsToSend = {}
@@ -143,6 +218,11 @@ function StalkersMods.Warnings.SyncOnlinePlayerWarnings(recipients)
 	end
 end
 
+------------------------------------------
+-- StalkersMods.Warnings.SyncSelfWarnings
+------------------------------------------
+-- Desc:		Sends the given player their own warnings.
+-- Arg One:		Player.
 function StalkersMods.Warnings.SyncSelfWarnings(ply)
 	local warnsToSend = StalkersMods.Warnings.GetWarningsOfPlayer(ply) or {}
 	net.Start("StalkersMods.Warnings.SyncOnlinePlys")
@@ -153,6 +233,7 @@ function StalkersMods.Warnings.SyncSelfWarnings(ply)
 	net.Send(ply)
 end
 
+-- Received from client when they ask to view warnings.
 util.AddNetworkString("StalkersMods.Warnings.RequestOnlineWarns")
 net.Receive("StalkersMods.Warnings.RequestOnlineWarns", function(_, ply)
 	if not IsValid(ply) then
@@ -179,6 +260,7 @@ net.Receive("StalkersMods.Warnings.RequestOnlineWarns", function(_, ply)
 	end)
 end)
 
+-- Received from client when they want to add a warning.
 util.AddNetworkString("StalkersMods.Warnings.RequestAddWarn")
 net.Receive("StalkersMods.Warnings.RequestAddWarn", function(_, ply)
 	if not IsValid(ply) then
@@ -200,6 +282,7 @@ net.Receive("StalkersMods.Warnings.RequestAddWarn", function(_, ply)
 	end)
 end)
 
+-- Received from client when they want to delete a warning.
 util.AddNetworkString("StalkersMods.Warnings.RequestDeleteWarn")
 net.Receive("StalkersMods.Warnings.RequestDeleteWarn", function(_, ply)
 	if not IsValid(ply) then
@@ -219,6 +302,7 @@ net.Receive("StalkersMods.Warnings.RequestDeleteWarn", function(_, ply)
 	end
 end)
 
+-- Received from client when they wany to see the warnings of a player given their SteamID.
 util.AddNetworkString("StalkersMods.Warnings.RequestBySteamID")
 net.Receive("StalkersMods.Warnings.RequestBySteamID", function(_, ply)
 	if not IsValid(ply) then

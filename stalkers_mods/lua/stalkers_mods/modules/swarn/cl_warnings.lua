@@ -64,6 +64,12 @@ function StalkersMods.Warnings.GetMenuPanel()
 	return IsValid(StalkersMods.Warnings.MenuPanel) and StalkersMods.Warnings.MenuPanel or false
 end
 
+----------------------------------------
+-- StalkersMods.Warnings.SendNewWarning
+----------------------------------------
+-- Desc:		Asks the server to register a new warning.
+-- Arg One:		String, steamid to warn.
+-- Arg Two:		String, reason for warning.
 function StalkersMods.Warnings.SendNewWarning(plySteamID, reason)
 	if #reason >= 65533 then
 		chat.AddText(Color(30, 144, 255), "[SWarn]", color_white, " Warning reason must be less than 65533 characters!")
@@ -75,18 +81,28 @@ function StalkersMods.Warnings.SendNewWarning(plySteamID, reason)
 	net.SendToServer()
 end
 
+--------------------------------------------------------------
+-- StalkersMods.Warnings.RequestLatestWarningsOfOnlinePlayers
+--------------------------------------------------------------
+-- Desc:		Requests the server for the warning data of online players.
+-- 				If they aren't allowed, then retrieves their own warnings.
 function StalkersMods.Warnings.RequestLatestWarningsOfOnlinePlayers()
 	StalkersMods.Warnings.WaitingOnOnlineWarnData = true
 	net.Start("StalkersMods.Warnings.RequestOnlineWarns")
 	net.SendToServer()
 end
 
+--------------------------------------------------
+-- StalkersMods.Warnings.RequestWarningsOfSteamID
+--------------------------------------------------
+-- Desc:		Requests the warnings of a given steamid.
 function StalkersMods.Warnings.RequestWarningsOfSteamID(steamID)
 	net.Start("StalkersMods.Warnings.RequestBySteamID")
 		net.WriteString(steamID)
 	net.SendToServer()
 end
 
+-- Received from server, tells the client of the given player's warnings.
 net.Receive("StalkersMods.Warnings.SyncOnlinePlys", function()
 	StalkersMods.Warnings.OnlinePlayerWarnings = {}
 
@@ -110,6 +126,7 @@ net.Receive("StalkersMods.Warnings.SyncOnlinePlys", function()
 	end
 end)
 
+-- Received from the server to tell the client about the given steamid's warnings.
 net.Receive("StalkersMods.Warnings.RequestBySteamID", function()
 	local numWarnings = net.ReadUInt(12)
 	local warnings = {}
@@ -523,6 +540,10 @@ do
 	vgui.Register("StalkersMods.Warnings.WarnsDisplayPanel", PANEL, "DPanel")
 end
 
+------------------------------------
+-- StalkersMods.Warnings.WarningBar
+------------------------------------
+-- Desc:		A vgui element for describing the details of a StalkersMods.Warnings.WarningClass object.
 do
 	local PANEL = {
 		darkerColor = Color(40, 40, 40, 255),

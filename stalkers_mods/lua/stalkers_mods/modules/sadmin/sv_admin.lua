@@ -9,6 +9,14 @@ concommand.Add("stalkermods_admin_clientready", function(ply)
 	end
 end)
 
+--------------------------------
+-- StalkersMods.Admin.BanPlayer
+--------------------------------
+-- Desc:		Bans the given player.
+-- Arg One:		Player, to ban.
+-- Arg Two:		Number, length of ban in seconds.
+-- Arg Three:	String, reason.
+-- Arg Four:	Player or Steamid, who banned them. Nil for server.
 function StalkersMods.Admin.BanPlayer(ply, length, reason, bannedBy)
 	if not ply:IsBot() then
 		local bannedBySteamID
@@ -19,6 +27,14 @@ function StalkersMods.Admin.BanPlayer(ply, length, reason, bannedBy)
 	end
 end
 
+---------------------------------
+-- StalkersMods.Admin.BanSteamID
+---------------------------------
+-- Desc:		Bans the given SteamID.
+-- Arg One:		String, steamid to ban.
+-- Arg Two:		Number, length of ban in sec.
+-- Arg Three:	String, reason for ban.
+-- Arg Four:	String, steamid of player that gave the ban.
 function StalkersMods.Admin.BanSteamID(steamid, length, reason, bannedBySteamID)
 	if steamid ~= "BOT" then
 		local bannedByPlyName
@@ -69,7 +85,11 @@ function StalkersMods.Admin.BanSteamID(steamid, length, reason, bannedBySteamID)
 		StalkersMods.Admin.WriteBansFile()
 	end
 end
-
+-----------------------------------
+-- StalkersMods.Admin.UnBanSteamID
+-----------------------------------
+-- Desc:		Unbans the given steamid.
+-- Arg One:		String, steamid to unban.
 function StalkersMods.Admin.UnBanSteamID(steamid)
 	if StalkersMods.Admin.Bans[steamid] then
 		StalkersMods.Admin.Bans[steamid].CurrentlyBanned = false
@@ -77,6 +97,12 @@ function StalkersMods.Admin.UnBanSteamID(steamid)
 	end
 end
 
+-------------------------------
+-- StalkersMods.Admin.IsBanned
+-------------------------------
+-- Desc:		Sees if the given steamid is banned.
+-- Arg One:		String, steamid.
+-- Returns:		Boolean.
 function StalkersMods.Admin.IsBanned(steamid)
 	local banData = StalkersMods.Admin.Bans[steamid]
 	if banData and banData.CurrentlyBanned then
@@ -102,6 +128,10 @@ function StalkersMods.Admin.IsBanned(steamid)
 	return false, -1
 end
 
+------------------------------------
+-- StalkersMods.Admin.WriteBansFile
+------------------------------------
+-- Desc:		Updates the currents bans with the ban file.
 function StalkersMods.Admin.WriteBansFile()
 	StalkersMods.Utility.SaveTableToFile(StalkersMods.Admin.Bans, StalkersMods.Admin.Config.PlayerBansFile)
 end

@@ -161,6 +161,12 @@ function StalkersMods.Admin.UserGroups.SyncUserGroup(userGroupName, recipients)
 	end
 end
 
+------------------------------------------------------
+-- StalkersMods.Admin.UserGroups.SyncUserGroupRemoval
+------------------------------------------------------
+-- Desc:		Syncs the removal of a user group with the given clients.
+-- Arg One:		String, user group name.
+-- Arg Two:		Player, table, or true, who to tell about the change. True will broadcast.
 util.AddNetworkString("StalkersMods.Admin.SyncUserGroupRemoval")
 function StalkersMods.Admin.UserGroups.SyncUserGroupRemoval(userGroupName, recipients)
 	net.Start("StalkersMods.Admin.SyncUserGroupRemoval")

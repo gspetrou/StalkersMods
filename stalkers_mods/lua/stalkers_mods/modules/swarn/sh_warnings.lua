@@ -1,5 +1,6 @@
 StalkersMods.Warnings = StalkersMods.Warnings or {}
 
+-- CAMI style privileges used in this module.
 StalkersMods.Warnings.Privileges = {
 	SYNC_ANY = {
 		Name = "swarn_sync_any",
@@ -22,11 +23,15 @@ StalkersMods.Warnings.Privileges = {
 		Description = "User can delete anyone's warning."
 	}
 }
-
 for privID, camiPriv in pairs(StalkersMods.Warnings.Privileges) do
 	CAMI.RegisterPrivilege(camiPriv)
 end
 
+--------------------------------------
+-- StalkersMods.Warnings.WriteWarning
+--------------------------------------
+-- Desc:		Writes a StalkersMods.Warnings.WarningClass object over net.
+-- Arg One:		StalkersMods.Warnings.WarningClass object, to write.
 function StalkersMods.Warnings.WriteWarning(warningObj)
 	net.WriteString(warningObj:GetOwnerSteamID())
 	net.WriteString(warningObj:GetOwnerNick())
@@ -36,6 +41,11 @@ function StalkersMods.Warnings.WriteWarning(warningObj)
 	net.WriteString(tostring(warningObj:GetTimeStamp()))
 end
 
+-------------------------------------
+-- StalkersMods.Warnings.ReadWarning
+-------------------------------------
+-- Desc:		Reads a StalkersMods.Warnings.WarningClass object over net.
+-- Returns:		StalkersMods.Warnings.WarningClass object, read in.
 function StalkersMods.Warnings.ReadWarning()
 	return StalkersMods.Warnings.WarningClass:New({
 		OwnerSteamID = net.ReadString(),
